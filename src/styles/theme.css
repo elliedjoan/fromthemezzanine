@@ -1,0 +1,13 @@
+:root {
+  --color-oxblood: #440f12;
+  --color-deep-oxblood: #250406;
+  --color-soft-grey: #aaa4a4;
+  --color-cream: #f6efd9;
+  --color-brand-blue: #536878;
+
+  --page-shadow: 0 1.25rem 3.5rem rgba(37, 4, 6, 0.32);
+  --soft-border: rgba(246, 239, 217, 0.16);
+  --max-book-width: 74rem;
+  --spread-max-width: 51.85rem;
+  --section-pad: 1.5rem;
+}
