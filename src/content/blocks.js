@@ -187,13 +187,13 @@ export const blocks = [
     showTitle: false,
     leftPage: {
       variant: 'transparent-image',
-      image: '/art/epigenetics-05-left.png',
-      imageAlt: 'Epigenetics sapien shape page',
+      image: '/art/epigenetics-05-right-v2.png',
+      imageAlt: 'Epigenetics rose garden page',
     },
     rightPage: {
       variant: 'transparent-image',
-      image: '/art/epigenetics-05-right-v2.png',
-      imageAlt: 'Epigenetics rose garden page',
+      image: '/art/epigenetics-05-right-painting.png',
+      imageAlt: 'Epigenetics abstract painting page',
     },
   },
   {
@@ -256,7 +256,7 @@ export const blocks = [
     },
     rightPage: {
       variant: 'transparent-image',
-      image: '/art/mayflies-01-right.png',
+      image: '/art/mayflies-01-right-v2.png',
       imageAlt: 'Why are the mayflies marching mayfly image page',
     },
   },

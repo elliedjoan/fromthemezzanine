@@ -104,6 +104,18 @@ img {
   outline-offset: 0.45rem;
 }
 
+.site-footer {
+  position: fixed;
+  right: clamp(0.8rem, 2.2vw, 2rem);
+  bottom: clamp(0.65rem, 1.6vw, 1.35rem);
+  z-index: 80;
+  color: rgba(159, 154, 154, 0.72);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(0.58rem, 0.72vw, 0.72rem);
+  line-height: 1;
+  pointer-events: none;
+}
+
 .about-shell {
   min-height: 100vh;
   min-height: 100svh;

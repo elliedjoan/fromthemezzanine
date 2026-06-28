@@ -178,7 +178,7 @@ export default function App() {
       <SiteHeader />
       <main className="art-book-shell">
         <CoverBlock cover={cover} />
-        <AboutSection className="about-shell-home" />
+        <AboutSection id="about" className="about-shell-home" />
         <TableOfContentsBlock
           contents={contents}
           onSelectTarget={selectSpreadById}
@@ -201,6 +201,9 @@ export default function App() {
           hasNext={activePageIndex >= 0 && activePageIndex < lightboxPages.length - 1}
         />
       </main>
+      <footer className="site-footer" aria-label="Copyright">
+        &copy; Ellie Joan 2026
+      </footer>
     </>
   );
 }

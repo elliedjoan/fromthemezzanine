@@ -4,9 +4,9 @@ export function SiteHeader() {
       <a className="site-nav-button site-nav-button-contents" href="/#contents" aria-label="Table of contents">
         <img src="/art/nav-table-of-contents.png" alt="" />
       </a>
-      <button className="site-nav-button site-nav-button-about" type="button" aria-label="About">
+      <a className="site-nav-button site-nav-button-about" href="/#about" aria-label="About">
         <img src="/art/nav-about.png" alt="" />
-      </button>
+      </a>
     </header>
   );
 }
