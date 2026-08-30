@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { blocks, contents, cover } from './content/blocks.js';
 import { CoverBlock } from './components/CoverBlock.jsx';
 import { TableOfContentsBlock } from './components/TableOfContentsBlock.jsx';
-import { FlipbookBlock } from './components/FlipbookBlock.jsx';
+import { ReaderBlock } from './components/ReaderBlock.jsx';
 import { PageLightbox } from './components/PageLightbox.jsx';
 import { SiteHeader } from './components/SiteHeader.jsx';
 import { AboutSection } from './components/AboutPage.jsx';
@@ -12,6 +12,12 @@ const showDevTileNumbers = false;
 export default function App() {
   const [activePage, setActivePage] = useState(null);
   const [activeSpreadIndex, setActiveSpreadIndex] = useState(0);
+  const [readerMode, setReaderMode] = useState(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get('view') === 'reader' || searchParams.has('section')
+      ? 'reader'
+      : 'overview';
+  });
 
   const spreadEntries = useMemo(() => {
     let nextTileNumber = (contents.pageCount ?? contents.pages?.length ?? 0) + 1;
@@ -48,9 +54,13 @@ export default function App() {
   );
 
   const setReaderUrl = useCallback((targetId, mode = 'replace') => {
-    const nextUrl = `${window.location.pathname}?section=${targetId}#reader`;
+    const nextUrl = new URL(window.location.href);
+    nextUrl.search = '';
+    nextUrl.searchParams.set('view', 'reader');
+    nextUrl.searchParams.set('section', targetId);
+    nextUrl.hash = 'reader';
     const method = mode === 'push' ? 'pushState' : 'replaceState';
-    window.history[method](null, '', nextUrl);
+    window.history[method](null, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
   }, []);
 
   const selectSpreadById = useCallback(
@@ -59,11 +69,12 @@ export default function App() {
 
       if (nextIndex < 0) return false;
 
+      setReaderMode('reader');
       setActiveSpreadIndex(nextIndex);
       setReaderUrl(targetId, historyMode);
 
       if (scroll) {
-        scrollToTarget('reader');
+        scrollToTarget(targetId);
       }
 
       return true;
@@ -73,7 +84,8 @@ export default function App() {
 
   useEffect(() => {
     const scrollToHashTarget = () => {
-      const section = new URLSearchParams(window.location.search).get('section');
+      const searchParams = new URLSearchParams(window.location.search);
+      const section = searchParams.get('section');
       const hashTargetId = window.location.hash.slice(1);
       const spreadTargetId = section || hashTargetId;
 
@@ -106,6 +118,35 @@ export default function App() {
     };
   }, [getSpreadIndexById, scrollToTarget, selectSpreadById]);
 
+  useEffect(() => {
+    if (readerMode !== 'reader') return undefined;
+
+    const spreadElements = spreadEntries
+      .map(({ block }) => document.getElementById(block.id))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visibleEntry) return;
+
+        const nextIndex = Number(visibleEntry.target.dataset.spreadIndex);
+        if (Number.isInteger(nextIndex)) setActiveSpreadIndex(nextIndex);
+      },
+      {
+        rootMargin: '-18% 0px -55% 0px',
+        threshold: [0.1, 0.3, 0.6],
+      },
+    );
+
+    spreadElements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, [readerMode, spreadEntries]);
+
   const openPage = (page) => {
     setActivePage(page);
   };
@@ -127,6 +168,8 @@ export default function App() {
           image: page.image,
           alt: pageLabel,
           tileNumber,
+          blockId: block.id,
+          side,
         });
       });
     });
@@ -150,28 +193,24 @@ export default function App() {
     setActivePage(lightboxPages[activePageIndex + 1]);
   };
 
-  const goToSpreadIndex = useCallback(
-    (nextIndex) => {
-      const boundedIndex = Math.min(Math.max(nextIndex, 0), spreadEntries.length - 1);
-      const targetEntry = spreadEntries[boundedIndex];
+  const changeReaderMode = useCallback(
+    (nextMode) => {
+      setReaderMode(nextMode);
 
-      if (!targetEntry) return;
+      const nextUrl = new URL(window.location.href);
+      if (nextMode === 'overview') {
+        nextUrl.searchParams.delete('view');
+        nextUrl.searchParams.delete('section');
+      } else {
+        nextUrl.searchParams.set('view', 'reader');
+      }
+      nextUrl.hash = 'reader';
+      window.history.replaceState(null, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
 
-      setActiveSpreadIndex(boundedIndex);
-      setReaderUrl(targetEntry.block.id);
+      scrollToTarget('reader');
     },
-    [setReaderUrl, spreadEntries],
+    [scrollToTarget],
   );
-
-  const showPreviousSpread = () => {
-    goToSpreadIndex(activeSpreadIndex - 1);
-  };
-
-  const showNextSpread = () => {
-    goToSpreadIndex(activeSpreadIndex + 1);
-  };
-
-  const activeSpreadEntry = spreadEntries[activeSpreadIndex] ?? spreadEntries[0];
 
   return (
     <>
@@ -183,12 +222,12 @@ export default function App() {
           contents={contents}
           onSelectTarget={selectSpreadById}
         />
-        <FlipbookBlock
-          entry={activeSpreadEntry}
+        <ReaderBlock
+          entries={spreadEntries}
+          pages={lightboxPages}
+          mode={readerMode}
           activeIndex={activeSpreadIndex}
-          total={spreadEntries.length}
-          onPrevious={showPreviousSpread}
-          onNext={showNextSpread}
+          onModeChange={changeReaderMode}
           onOpenPage={openPage}
           showTileNumbers={showDevTileNumbers}
         />

@@ -13,7 +13,13 @@ function Page({ page, side, title, onOpenPage, tileNumber }) {
         aria-label={`Open ${pageLabel}`}
         onClick={() => onOpenPage({ image: page.image, alt: pageLabel })}
       >
-        <img className="transparent-page-image" src={page.image} alt={page.imageAlt || ''} />
+        <img
+          className="transparent-page-image"
+          src={page.image}
+          alt={page.imageAlt || ''}
+          loading="lazy"
+          decoding="async"
+        />
       </button>
     );
   }
@@ -41,7 +47,7 @@ function Page({ page, side, title, onOpenPage, tileNumber }) {
         {page.eyebrow && <p className="page-eyebrow">{page.eyebrow}</p>}
         {page.image && (
           <figure className="page-figure">
-            <img src={page.image} alt={page.imageAlt || ''} />
+            <img src={page.image} alt={page.imageAlt || ''} loading="lazy" decoding="async" />
           </figure>
         )}
         {page.text && <p className="page-text">{page.text}</p>}
