@@ -401,18 +401,6 @@ img {
   object-fit: contain;
 }
 
-.overview-page span {
-  position: absolute;
-  right: 0.35rem;
-  bottom: 0.35rem;
-  color: rgba(246, 239, 217, 0.66);
-  font-family: 'Anybody', 'Space Grotesk', sans-serif;
-  font-size: clamp(0.54rem, 0.65vw, 0.68rem);
-  font-variation-settings: 'wdth' 132;
-  font-weight: 560;
-  letter-spacing: 0.04em;
-}
-
 .overview-page:hover,
 .overview-page:focus-visible {
   filter: brightness(1.08);

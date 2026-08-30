@@ -1,53 +1,46 @@
 # Design QA
 
-- Source visual truth: `C:\Users\Admin\AppData\Local\Temp\codex-clipboard-25cd4b49-21eb-4486-bf8e-ca2406eda575.png` and `C:\Users\Admin\AppData\Local\Temp\codex-clipboard-0f8876e2-a78b-43da-b9fb-6d3a17622e53.png`
-- Primary implementation screenshots: `artifacts/qa/23-default-overview.png` and `artifacts/qa/24-footer-bottom-only.png`
-- Same-input comparisons: `artifacts/qa/25-tabs-comparison.png` and `artifacts/qa/26-footer-comparison.png`
-- Source pixels: 519 x 181 for the tab crop and 225 x 83 for the copyright crop.
-- Implementation viewport: 1936 x 824 CSS pixels at device scale factor 1. Focused implementation regions were cropped to match each source input.
-- States: default Overview at the reader start, Reader toggle state, and the true document bottom.
+- Source visual truth: `C:\Users\Admin\AppData\Local\Temp\codex-clipboard-5b820764-084e-4ca0-8634-88f10399bf9b.png`
+- Browser-rendered implementation screenshot: `artifacts/qa/30-overview-without-numbers.png`
+- Combined source/implementation comparison: `artifacts/qa/31-overview-labels-comparison.png`
+- Source pixels: 1783 x 109.
+- Implementation pixels and CSS viewport: 1936 x 824 at device scale factor 1.
+- Comparison normalization: the 1783 x 109 source strip appears at native width above the full implementation capture scaled proportionally to 1783 pixels wide.
+- State: default Overview view, scrolled to the reader grid start.
 
-## Findings and resolution
+## Findings
 
-- [Resolved P1] Reader was the default view and occupied the left tab.
-  - Fix: Overview is now the default and left-hand tab; Reader is the right-hand tab.
-  - Evidence: the default capture shows Overview pressed and the URL contains no Reader view parameter.
-- [Resolved P1] The copyright remained fixed to the viewport instead of appearing only at the end of the site.
-  - Fix: moved the footer into normal document flow and aligned it to the bottom-right of the final content.
-  - Evidence: the footer is absent at the top and appears only with zero document scroll remaining.
-- [Resolved P2] The copyright typography did not match the requested horizon-style direction.
-  - Fix: changed it to Michroma with compact uppercase geometry and restrained tracking, with local fallbacks.
-- [Resolved P2] Reader deep links still needed to open the correct mode.
-  - Fix: Reader and table-of-contents links explicitly set `view=reader`, while returning to Overview removes the view and section parameters.
+- [Resolved P2] Overview folio labels were still visible beneath each artwork tile.
+  - Evidence: the supplied strip shows `07`, `08`, `09`, and `10`; the revised browser capture contains no per-tile folio labels.
+  - Fix: removed the number element from every Overview tile and removed its unused CSS rules.
+- No remaining actionable P0, P1, or P2 differences for this requested change.
 
 ## Required fidelity surfaces
 
-- Typography: Michroma is loaded for the copyright; Anybody and Space Grotesk remain as fallbacks and continue to style the reader controls.
-- Layout: Overview remains the left tab, Reader the right tab, and the toolbar remains in normal flow without covering artwork.
-- Footer: right-aligned at the true end of the document, never fixed or sticky.
-- Colors and content: the flat `#310304` background, artwork assets, folios, and editorial copy are unchanged.
-- Responsive behavior: the footer remains in document flow and the view controls retain their order at desktop and mobile breakpoints.
+- Fonts and typography: no artwork, navigation, or editorial typography changed. The requested tile numbers are removed; the separate overall progress range remains intact.
+- Spacing and layout rhythm: the four-column Overview grid, tile sizing, gaps, and alignment are unchanged.
+- Colors and tokens: the `#310304` background and existing opacity tokens are unchanged.
+- Image quality and asset fidelity: all 92 original artwork images remain unchanged and use the same sizing and lazy-loading behavior.
+- Copy and content: only the per-tile folio labels were removed. Artwork copy and Reader folios are unchanged.
 
 ## Interaction, responsive, and runtime evidence
 
-- Loading `/` defaults to Overview and reports the full folio range `03-94`.
-- Selecting Reader updates the URL to `?view=reader#reader` and activates the right-hand tab.
-- Returning to Overview removes the Reader query parameter and activates the left-hand tab.
-- The footer has computed `position: static`, is not visible at the top, and touches the bottom of the viewport only at the true document end.
-- Michroma loaded successfully in the browser.
-- Browser runtime reported no errors.
+- Browser DOM verification found 92 Overview page buttons and zero `.overview-page span` label elements.
+- Overview remains the default active mode; Reader remains the inactive right-hand tab.
+- The overall progress indicator remains `03–94` so the user still has book-range context.
 - Production build passed with 439 modules transformed.
+- No application exceptions occurred. Chrome reported only the pre-existing missing `favicon.ico` request, unrelated to this change.
 
 ## Comparison history
 
-1. Compared the supplied tab crop with the revised default reader header.
-2. Reordered the tabs and changed the initial view state, while retaining direct Reader links.
-3. Compared the supplied fixed-footer crop with the revised end-of-page footer.
-4. Verified top-of-page absence, true-bottom presence, computed font and positioning, both toggle states, URLs, runtime errors, and the production build.
+1. The supplied screenshot identified the per-tile folio labels as unwanted.
+2. Removed the labels from the Overview component and deleted the corresponding CSS.
+3. Rebuilt the site, captured the rendered Overview in Chrome, and compared it with the supplied strip in one image.
+4. Verified zero label nodes, all 92 artwork buttons, the default Overview state, the retained overall progress range, and browser runtime behavior.
 
 ## Follow-up polish
 
-- P3: none required for this requested refinement.
+- P3: the existing missing `favicon.ico` request can be resolved separately; it does not affect this visual change.
 
 ## Final result
 

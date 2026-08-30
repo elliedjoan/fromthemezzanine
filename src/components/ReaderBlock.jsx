@@ -74,7 +74,6 @@ export function ReaderBlock({
               onClick={() => onOpenPage(page)}
             >
               <img src={page.image} alt={page.alt} loading="lazy" decoding="async" />
-              <span>{String(page.tileNumber).padStart(2, '0')}</span>
             </button>
           ))}
         </div>
