@@ -78,5 +78,5 @@
   .project-description { width: 100%; min-width: 0; font-size: 12px; padding: 10px; }
 }
 @media (hover: none) {
-  .project-description { position: static; transform: none; width: 100%; max-width: none; visibility: visible; opacity: 1; border: 0; padding: 10px 0; background: transparent; color: #f6efd9; }
+  .project-description { display: none; }
 }
